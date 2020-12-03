@@ -10,7 +10,7 @@ from threading import Thread
 #setting logging basic info
 logging.basicConfig(level = logging.INFO, filename = 'findCards.log', filemode = 'a',format='%(asctime)s - %(message)s', datefmt='%d-%b-%y %H:%M:%S')
 
-#add product links here
+#add product links here, few sites may block you temporarily!
 urls=["https://www.newegg.com/evga-geforce-rtx-3080-10g-p5-3897-kr/p/N82E16814487518",
       "https://www.newegg.com/evga-geforce-rtx-3080-10g-p5-3885-kr/p/N82E16814487520",
       "https://www.newegg.com/pny-geforce-rtx-3080-vcg308010tfxmpb/p/N82E16814133810",
@@ -24,24 +24,26 @@ urls=["https://www.newegg.com/evga-geforce-rtx-3080-10g-p5-3897-kr/p/N82E1681448
 outOfStockTextList = ["OUT OF STOCK","Notify When Available"]
 inStockTextList = ["In Stock","Add to Cart"]
 
-#function to play music when stock found
+#function to play music when stock found.
 def playFoundMusic():
    playsound("https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3")
 
-#loop over all urls and check if stock is present
-for j in range(100):
+#loop over infinite times!
+while 1:
+    #loop over all urls
     for i in range(len(urls)):
-        
         x = re.search("https?://([A-Za-z_0-9.-]+).*", urls[i])
         r = requests.get(urls[i])
         res = r.text.encode("utf-8")
+        #if status code not 200
         if(r.status_code != 200):
-            logging.error ("ERROR! STATUS: "+r.status_code+" ["+x.group(1)+"]"+urls[i])
+            logging.error ("ERROR! STATUS: "+str(r.status_code)+" ["+x.group(1)+"]"+urls[i])
+        #check if stock is present    
         elif not(any(outOfStockText in res for outOfStockText in outOfStockTextList)):
             logging.info ("FOUND: ["+x.group(1)+"]"+urls[i])
             Thread(target=playFoundMusic).start()
+        #stock not present
         else:
             logging.info ("NOT FOUND: ["+x.group(1)+"]"+urls[i])
-
 
 
